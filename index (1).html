@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Avionics Supply Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: navy header and hero over white pages. Multi-view site on hash routes: home, inventory, part detail, quote, about, shipping, contact. Catalogue cards are the main unit. */
+:root{
+  --navy:#101F35; --navy2:#172C4A; --blue:#2878D0; --btn:#2878D0;
+  --bg:#FFFFFF; --surface:#F1F4F8; --card:#FFFFFF; --ink:#101F35; --mut:#4B5B70; --line:#D5DDE8; --link:#1D62B0; --ph:#E3EEFB;
+  --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --body:'Barlow',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --e:cubic-bezier(.2,.8,.2,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1424; --surface:#101F35; --card:#132640; --ink:#EAF0F8; --mut:#9FB0C6; --line:#26405F; --link:#6DB0F2; --ph:#1B3558; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{--bg:#0A1424; --surface:#101F35; --card:#132640; --ink:#EAF0F8; --mut:#9FB0C6; --line:#26405F; --link:#6DB0F2; --ph:#1B3558; color-scheme:dark;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy)}
+a{color:var(--link)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{width:100%;max-width:1240px;margin-inline:auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;line-height:1.05;margin:0;text-transform:uppercase;text-wrap:balance}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--link);display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--blue)}
+.ph{background:var(--ph);padding:1px 6px;border-radius:3px;font-family:var(--mono);font-size:.88em;overflow-wrap:anywhere}
+
+/* header */
+.hd{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);color:#fff;border-bottom:1px solid #26405F}
+.hd .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 28px;padding-block:10px}
+.brand{display:inline-flex;align-items:center;gap:12px;color:#fff;text-decoration:none;font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:.06em;text-transform:uppercase}
+.brand svg{width:34px;height:34px}
+.brand small{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.14em;color:#9FB0C6;display:block;line-height:1.2}
+.nav{display:flex;flex-wrap:wrap;align-items:center;gap:2px 22px;font-size:15px;font-weight:500}
+.nav a{position:relative;color:#DCE6F3;text-decoration:none;padding:12px 0}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:2px;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--e)}
+.nav a:hover::after,.nav a[aria-current="page"]::after{transform:scaleX(1)}
+.nav a[aria-current="page"]{color:#fff}
+.nav a.cta{background:var(--btn);color:#fff;padding:11px 18px;border-radius:4px;font-weight:600}
+.nav a.cta::after{display:none}
+.nav a.cta:hover{background:#1F66B8}
+
+/* views */
+.view{display:none}
+.view.on{display:block;animation:enter .55s var(--e)}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:13px 26px;border-radius:4px;border:2px solid var(--btn);background:var(--btn);color:#fff;font:600 16px var(--body);text-decoration:none;cursor:pointer;transition:background .25s,transform .25s var(--e),color .25s,border-color .25s}
+.btn:hover{background:#1F66B8;border-color:#1F66B8;transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:#fff;border-color:#7FA6D6}
+.btn.ghost:hover{background:#fff;color:var(--navy);border-color:#fff}
+.btn.line{background:transparent;color:var(--link);border-color:var(--link)}
+.btn.line:hover{background:var(--link);color:var(--bg);border-color:var(--link)}
+.btns{display:flex;flex-wrap:wrap;gap:14px}
+
+/* hero */
+.hero{background:var(--navy);color:#fff;background-image:linear-gradient(rgba(127,166,214,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(127,166,214,.07) 1px,transparent 1px);background-size:44px 44px}
+.hero .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:48px 64px;padding-block:72px 84px}
+.hero-l{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:22px}
+.hero .eyebrow{color:#7FB3F0}
+.hero h1{font-size:clamp(46px,7vw,92px);line-height:.95}
+.hero h1 span{color:#7FB3F0}
+.hero p{margin:0;font-size:20px;color:#C3D2E6;max-width:30em}
+.hsearch{display:flex;flex-wrap:wrap;gap:10px;max-width:520px;margin-top:6px}
+.hsearch input{flex:1 1 220px;min-width:0;min-height:48px;padding:12px 16px;font:500 16px var(--body);border-radius:4px;border:2px solid #3A5578;background:#0B1A2E;color:#fff}
+.hsearch input::placeholder{color:#8FA3BC}
+.hero-r{flex:1 1 360px;min-width:0;max-width:520px;margin-inline:auto}
+.pfd{width:100%;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(0,0,0,.4))}
+.hz{animation:roll 9s ease-in-out infinite alternate;transform-origin:180px 145px}
+.ladder{animation:pitch 6.5s ease-in-out infinite alternate}
+.hdg{animation:hdg 22s linear infinite}
+.spd{animation:spd 7s ease-in-out infinite alternate}
+@keyframes roll{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@keyframes pitch{from{transform:translateY(-6px)}to{transform:translateY(8px)}}
+@keyframes hdg{to{transform:translateX(-120px)}}
+@keyframes spd{from{transform:translateY(-4px)}to{transform:translateY(4px)}}
+.cap{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:#8FA3BC;text-transform:uppercase}
+
+/* sections */
+.sec{padding-block:76px}
+.sec.alt{background:var(--surface)}
+.sh{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 30px;margin-bottom:34px}
+.sh h2{font-size:clamp(34px,5vw,56px);margin-top:10px}
+.sh a.more{font-weight:600;text-decoration:none;border-bottom:2px solid var(--blue);padding-bottom:2px}
+.page-h{background:var(--navy);color:#fff}
+.page-h .wrap{padding-block:52px 56px;display:flex;flex-direction:column;gap:12px}
+.page-h .eyebrow{color:#7FB3F0}
+.page-h h1{font-size:clamp(40px,6vw,76px)}
+.page-h p{margin:0;color:#C3D2E6;max-width:40em;font-size:18px}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,265px),1fr));gap:22px}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .35s var(--e),box-shadow .35s,border-color .3s}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 34px -16px rgba(16,31,53,.45);border-color:var(--blue)}
+.art{position:relative;aspect-ratio:4/3;background:var(--surface);display:grid;place-items:center;color:var(--navy);border-bottom:1px solid var(--line)}
+.sec.alt .art{background:var(--bg)}
+:root[data-theme="dark"] .art{color:#BFD3EC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .art{color:#BFD3EC}}
+.ico{width:62%;height:auto;transition:transform .5s var(--e)}
+.card:hover .ico{transform:scale(1.07)}
+.tag{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--mut);color:var(--mut);background:var(--bg);border-radius:3px}
+.tag.live{border-color:var(--blue);color:var(--link)}
+.cb{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.mk{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--link)}
+.cb h3{font-size:28px}
+.pn{font-family:var(--mono);font-size:13px;color:var(--mut);overflow-wrap:anywhere}
+.row2{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-top:auto;padding-top:10px}
+.chip{font-size:13px;font-weight:600;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--mut)}
+.pr{font-family:var(--display);font-weight:700;font-size:26px}
+.go{font-weight:600;font-size:15px;color:var(--link)}
+
+/* makers + why */
+.makers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px}
+.mkr{display:flex;flex-direction:column;gap:4px;padding:22px;border:1px solid var(--line);border-radius:8px;background:var(--card);text-align:left;font:inherit;color:var(--ink);cursor:pointer;transition:background .3s,color .3s,transform .3s var(--e),border-color .3s}
+.mkr b{font-family:var(--display);font-size:28px;text-transform:uppercase;letter-spacing:.02em}
+.mkr span{font-family:var(--mono);font-size:13px;color:var(--mut);transition:color .3s}
+.mkr:hover{background:var(--navy);color:#fff;border-color:var(--navy);transform:translateY(-4px)}
+.mkr:hover span{color:#9FC2EE}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:34px 30px}
+.why div{border-top:3px solid var(--blue);padding-top:16px}
+.why h3{font-size:26px;margin-bottom:8px}
+.why p{margin:0;color:var(--mut)}
+.rfq{background:var(--blue);color:#fff}
+.rfq .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 40px;padding-block:56px}
+.rfq h2{font-size:clamp(32px,4.4vw,52px);max-width:16em}
+.rfq p{margin:10px 0 0;color:#E6F0FC;max-width:36em}
+.rfq .btn{background:#fff;color:var(--navy);border-color:#fff}
+.rfq .btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:0;border-top:1px solid var(--line)}
+.info div{padding:20px 20px 20px 0;border-bottom:1px solid var(--line)}
+.info small,.dl small{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+
+/* inventory */
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px;padding:22px;border:1px solid var(--line);border-radius:8px;background:var(--card);margin-bottom:22px}
+.f{display:flex;flex-direction:column;gap:6px}
+.f.wide{grid-column:span 2}
+@media (max-width:560px){.f.wide{grid-column:auto}}
+label,.lbl{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+input[type=text],input[type=email],input[type=number],input[type=search],select,textarea{width:100%;min-height:46px;padding:11px 14px;font:500 16px var(--body);border:1.5px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
+textarea{resize:vertical}
+input:hover,select:hover,textarea:hover{border-color:var(--blue)}
+.bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 20px;margin-bottom:22px;color:var(--mut);font-size:15px}
+.note{padding:14px 18px;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:4px;background:var(--surface);color:var(--mut);font-size:15px;margin-bottom:22px}
+.empty{padding:50px 26px;border:1px dashed var(--line);border-radius:8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty h3{font-size:30px}
+
+/* part detail */
+.crumb{padding-block:22px 6px;font-size:14px;color:var(--mut)}
+.crumb a{font-weight:600}
+.pd{display:flex;flex-wrap:wrap;gap:36px 56px;padding-block:14px 60px}
+.pd-art{flex:1 1 400px;min-width:0}
+.pd-art .art{border:1px solid var(--line);border-radius:8px}
+.pd-art .ico{width:56%}
+.pd-info{flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:16px}
+.pd-info h1{font-size:clamp(38px,5vw,64px)}
+.pd-price{font-family:var(--display);font-weight:700;font-size:44px;line-height:1}
+.dl{display:grid;grid-template-columns:minmax(120px,.8fr) 1.6fr;border-top:1px solid var(--line);margin:6px 0 0}
+.dl dt,.dl dd{margin:0;padding:12px 0;border-bottom:1px solid var(--line)}
+.dl dt{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding-top:15px}
+.dl dd{font-weight:500;overflow-wrap:anywhere}
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;margin:0;padding:0;list-style:none}
+.docs li{padding:14px 16px;border:1px solid var(--line);border-radius:6px;background:var(--card);font-weight:500;display:flex;gap:10px;align-items:center}
+.docs svg{flex:0 0 18px;width:18px;height:18px;color:var(--blue)}
+
+/* forms */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px}
+.fgrid .full{grid-column:1/-1}
+.checks{display:flex;flex-wrap:wrap;gap:10px 22px}
+.checks label{display:flex;align-items:center;gap:10px;font-family:var(--body);font-size:16px;letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer;min-height:44px}
+.checks input{width:20px;height:20px;accent-color:var(--blue)}
+.formbox{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:32px}
+.err{color:#B3261E;font-weight:600;min-height:1.4em}
+:root[data-theme="dark"] .err{color:#FF9A92}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .err{color:#FF9A92}}
+.result pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;font:400 14px/1.7 var(--mono);margin:16px 0}
+.lay{display:flex;flex-wrap:wrap;gap:44px 60px;padding-block:56px 80px}
+.lay main,.lay .col{flex:2 1 460px;min-width:0}
+.lay aside{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:22px}
+.sidebox{border:1px solid var(--line);border-radius:8px;padding:24px;background:var(--surface)}
+.sidebox h3{font-size:26px;margin-bottom:10px}
+.sidebox p,.sidebox li{color:var(--mut);margin:0 0 8px}
+.sidebox ul{margin:0;padding-left:20px}
+
+/* about / shipping */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px}
+.panel{border:1px solid var(--line);border-radius:8px;padding:26px;background:var(--card);display:flex;flex-direction:column;gap:10px}
+.panel h3{font-size:28px}
+.panel p{margin:0;color:var(--mut)}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 0;font-family:var(--display);font-weight:700;font-size:26px;text-transform:uppercase;letter-spacing:.02em}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);font-size:26px;color:var(--blue);transition:transform .4s var(--e)}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 20px;color:var(--mut);max-width:44em;animation:enter .4s var(--e)}
+
+/* footer */
+.ft{background:var(--navy);color:#C3D2E6}
+.ft .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:26px 40px;padding-block:44px 34px}
+.ft a{color:#DCE6F3;text-decoration:none}
+.ft a:hover{text-decoration:underline}
+.ft .col{display:flex;flex-direction:column;gap:6px;font-size:15px;min-width:0}
+.ft b{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#7FB3F0;font-weight:500;margin-bottom:4px}
+.legal{border-top:1px solid #26405F}
+.legal .wrap{padding-block:18px;font-size:13px;color:#8FA3BC}
+
+.rv{transition:opacity .8s var(--e),transform .8s var(--e);transition-delay:var(--d,0s)}
+.rv.pre{opacity:0;transform:translateY(26px)}
+@media (max-width:700px){.dl{grid-template-columns:1fr}.dl dt{border-bottom:0;padding-bottom:0}.formbox{padding:22px}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ic-display" viewBox="0 0 160 120"><rect x="12" y="12" width="136" height="96" rx="8" fill="none" stroke="currentColor" stroke-width="3"/><rect x="24" y="24" width="112" height="58" rx="3" fill="currentColor" opacity=".13"/><path d="M24 53h112" stroke="currentColor" stroke-width="2" opacity=".5"/><path d="M62 53h36M80 53v8" fill="none" style="stroke:var(--blue)" stroke-width="4" stroke-linecap="round"/><circle cx="36" cy="95" r="3.5" fill="currentColor"/><circle cx="56" cy="95" r="3.5" fill="currentColor"/><circle cx="76" cy="95" r="3.5" fill="currentColor"/><circle cx="96" cy="95" r="3.5" fill="currentColor"/><circle cx="116" cy="95" r="3.5" fill="currentColor"/></symbol>
+    <symbol id="ic-radio" viewBox="0 0 160 120"><rect x="8" y="30" width="144" height="62" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><rect x="20" y="42" width="62" height="22" rx="2" fill="currentColor" opacity=".13"/><path d="M26 53h40" fill="none" style="stroke:var(--blue)" stroke-width="4" stroke-linecap="round"/><circle cx="110" cy="58" r="14" fill="none" stroke="currentColor" stroke-width="3"/><path d="M110 58l7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="136" cy="58" r="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M22 76h58" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".5"/></symbol>
+    <symbol id="ic-dial" viewBox="0 0 160 120"><circle cx="80" cy="60" r="48" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="80" cy="60" r="38" fill="currentColor" opacity=".1"/><path d="M80 24v8M80 88v8M44 60h8M108 60h8M54 34l5 5M106 34l-5 5M54 86l5-5M106 86l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M80 60L100 40" fill="none" style="stroke:var(--blue)" stroke-width="4" stroke-linecap="round"/><circle cx="80" cy="60" r="4" fill="currentColor"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="hd">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="Avionics Supply Co., home">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#2878D0"/><path d="M8 24l24-12-6 18-6-7-6 5z" fill="#fff"/></svg>
+      <span>Avionics Supply Co.<small>Aircraft parts and avionics · USA</small></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#home" data-r="home">Home</a>
+      <a href="#inventory" data-r="inventory">Inventory</a>
+      <a href="#about" data-r="about">About</a>
+      <a href="#shipping" data-r="shipping">Shipping &amp; Returns</a>
+      <a href="#contact" data-r="contact">Contact</a>
+      <a class="cta" href="#quote" data-r="quote">Request a Quote</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HOME -->
+<div class="view" id="v-home" data-view="home">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-l">
+        <span class="eyebrow">Aircraft parts &amp; avionics</span>
+        <h1>Precision parts. <span>Reliable aviation supply.</span></h1>
+        <p>Your source for aircraft avionics, instruments and aviation components.</p>
+        <form class="hsearch" id="hform" role="search">
+          <label for="h-q" class="lbl" style="flex:1 0 100%;color:#8FA3BC">Search by part number or manufacturer</label>
+          <input id="h-q" type="search" placeholder="011-01264-50, Garmin, GDU 620">
+          <button class="btn" type="submit">Search</button>
+        </form>
+        <div class="btns">
+          <a class="btn" href="#inventory">Browse Inventory</a>
+          <a class="btn ghost" href="#quote">Request a Quote</a>
+        </div>
+      </div>
+      <div class="hero-r" aria-hidden="false">
+        <svg class="pfd" viewBox="0 0 360 290" role="img" aria-label="Illustration of an avionics flight display">
+          <defs><clipPath id="scr"><rect x="14" y="14" width="332" height="262" rx="6"/></clipPath></defs>
+          <rect x="2" y="2" width="356" height="286" rx="14" fill="#0B1A2E" stroke="#3A5578" stroke-width="3"/>
+          <g clip-path="url(#scr)">
+            <g class="hz">
+              <rect x="-220" y="-220" width="800" height="365" fill="#2878D0"/>
+              <rect x="-220" y="145" width="800" height="420" fill="#16304F"/>
+              <line x1="-220" y1="145" x2="580" y2="145" stroke="#fff" stroke-width="2.5"/>
+              <g class="ladder" stroke="#fff" stroke-width="2" fill="none">
+                <path d="M150 115h60M165 85h30M150 175h60M165 205h30"/>
+              </g>
+              <g font-family="IBM Plex Mono,monospace" font-size="11" fill="#fff"><text x="128" y="119">5</text><text x="218" y="119">5</text><text x="128" y="179">5</text><text x="218" y="179">5</text></g>
+            </g>
+            <rect x="14" y="14" width="58" height="262" fill="#0B1A2E" opacity=".78"/>
+            <rect x="288" y="14" width="58" height="262" fill="#0B1A2E" opacity=".78"/>
+            <g class="spd" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E6EEF8">
+              <text x="26" y="70">130</text><text x="26" y="110">120</text><text x="26" y="150">110</text><text x="26" y="190">100</text><text x="26" y="230">90</text>
+              <path d="M62 66h6M62 106h6M62 146h6M62 186h6M62 226h6" stroke="#E6EEF8" stroke-width="2"/>
+            </g>
+            <g class="spd" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E6EEF8" style="animation-direction:alternate-reverse">
+              <text x="298" y="70">3700</text><text x="298" y="110">3600</text><text x="298" y="150">3500</text><text x="298" y="190">3400</text><text x="298" y="230">3300</text>
+              <path d="M290 66h6M290 106h6M290 146h6M290 186h6M290 226h6" stroke="#E6EEF8" stroke-width="2"/>
+            </g>
+            <rect x="26" y="136" width="46" height="24" fill="#0B1A2E" stroke="#fff" stroke-width="2"/><text x="32" y="154" font-family="IBM Plex Mono,monospace" font-size="14" fill="#fff" font-weight="500">110</text>
+            <rect x="288" y="136" width="58" height="24" fill="#0B1A2E" stroke="#fff" stroke-width="2"/><text x="294" y="154" font-family="IBM Plex Mono,monospace" font-size="14" fill="#fff" font-weight="500">3500</text>
+            <rect x="72" y="246" width="216" height="30" fill="#0B1A2E" opacity=".85"/>
+            <svg x="72" y="246" width="216" height="30" viewBox="0 0 216 30" overflow="hidden">
+              <g class="hdg" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E6EEF8">
+                <text x="-60" y="20">N</text><text x="0" y="20">3</text><text x="60" y="20">6</text><text x="120" y="20">9</text><text x="180" y="20">E</text><text x="240" y="20">12</text><text x="300" y="20">15</text><text x="360" y="20">S</text>
+                <path d="M-56 4v6M4 4v6M64 4v6M124 4v6M184 4v6M244 4v6M304 4v6M364 4v6" stroke="#E6EEF8" stroke-width="2"/>
+              </g>
+              <path d="M108 0l-6 9h12z" fill="#fff"/>
+            </svg>
+            <path d="M120 145h44l8 10M240 145h-44l-8 10" fill="none" stroke="#FFC53D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="180" cy="145" r="4" fill="#FFC53D"/>
+          </g>
+        </svg>
+        <div class="cap"><span>Avionics Supply Co. · USA</span><span>Illustration</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec"><div class="wrap">
+    <div class="sh"><div><span class="eyebrow">Featured</span><h2>Featured avionics</h2></div><a class="more" href="#inventory">View all inventory</a></div>
+    <div class="grid" id="featured"></div>
+  </div></section>
+
+  <section class="sec alt"><div class="wrap">
+    <div class="sh"><div><span class="eyebrow">New in stock</span><h2>Recently listed inventory</h2></div><a class="more" href="#inventory">View all inventory</a></div>
+    <div class="grid" id="recent"></div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="sh"><div><span class="eyebrow">Manufacturers</span><h2>Browse by manufacturer</h2></div></div>
+    <div class="makers" id="makers"></div>
+  </div></section>
+
+  <section class="sec alt"><div class="wrap">
+    <div class="sh"><div><span class="eyebrow">Why us</span><h2>Why source parts from Avionics Supply Co.</h2></div></div>
+    <div class="why">
+      <div class="rv"><h3>Search by part number</h3><p>Find a unit by part number, manufacturer, condition, category or price.</p></div>
+      <div class="rv" style="--d:.08s"><h3>Documentation on request</h3><p>Ask for FAA Form 8130-3, certificates of conformity, records and serial numbers with any quote. What exists depends on the part.</p></div>
+      <div class="rv" style="--d:.16s"><h3>Quote-based buying</h3><p>Send a request for a specific part and get a direct reply with availability and price.</p></div>
+      <div class="rv" style="--d:.24s"><h3>Direct contact</h3><p>Reach the seller by email, phone or WhatsApp. Ask questions before you commit.</p></div>
+    </div>
+  </div></section>
+
+  <section class="rfq"><div class="wrap">
+    <div><h2>Need a specific part?</h2><p>Tell us the part number, quantity and the documentation you need. We reply with availability and a quotation.</p></div>
+    <a class="btn" href="#quote">Request a Quote</a>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="sh"><div><span class="eyebrow">Contact</span><h2>Get in touch</h2></div><a class="more" href="#contact">Contact page</a></div>
+    <div class="info">
+      <div><small>Email</small><span class="ph">[BUSINESS EMAIL]</span></div>
+      <div><small>Telephone</small><span class="ph">[BUSINESS PHONE]</span></div>
+      <div><small>WhatsApp</small><span class="ph">[WHATSAPP NUMBER]</span></div>
+      <div><small>Location</small>USA · <span class="ph">[BUSINESS ADDRESS]</span></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- INVENTORY -->
+<div class="view" id="v-inventory" data-view="inventory">
+  <div class="page-h"><div class="wrap"><span class="eyebrow">Parts inventory</span><h1>Aircraft parts catalogue</h1><p>Search by part number or manufacturer, then filter by condition, category and price.</p></div></div>
+  <section class="sec" style="padding-top:40px"><div class="wrap">
+    <div class="note">Sample catalogue. The Garmin G500 GDU 620 comes from the business's Facebook post. Every other part is a sample so you can see search and filters working. Replace them with real stock.</div>
+    <div class="filters">
+      <div class="f wide"><label for="i-q">Search part number or manufacturer</label><input id="i-q" type="search" placeholder="e.g. 011-01264-50 or Garmin"></div>
+      <div class="f"><label for="i-make">Manufacturer</label><select id="i-make"></select></div>
+      <div class="f"><label for="i-cond">Condition</label><select id="i-cond"></select></div>
+      <div class="f"><label for="i-cat">Category</label><select id="i-cat"></select></div>
+      <div class="f"><label for="i-price">Price</label><select id="i-price"><option value="any">Any price</option><option value="u2500">Under $2,500</option><option value="o2500">$2,500 and above</option><option value="req">Price on request</option></select></div>
+      <div class="f"><label for="i-sort">Sort by</label><select id="i-sort"><option value="new">Newest arrivals</option><option value="pa">Price: low to high</option><option value="pd">Price: high to low</option><option value="name">Name</option></select></div>
+    </div>
+    <div class="bar"><span id="count" aria-live="polite"></span><button class="btn line" id="reset" type="button" style="min-height:42px;padding:8px 18px">Clear filters</button></div>
+    <div class="grid" id="results"></div>
+  </div></section>
+</div>
+
+<!-- PART -->
+<div class="view" id="v-part" data-view="part">
+  <div class="wrap"><div class="crumb"><a href="#inventory">Inventory</a> / <span id="pd-crumb"></span></div>
+    <div class="pd">
+      <div class="pd-art"><div class="art" id="pd-art"></div></div>
+      <div class="pd-info" id="pd-info"></div>
+    </div>
+  </div>
+  <section class="sec alt"><div class="wrap">
+    <div class="sh"><div><span class="eyebrow">Documentation</span><h2>Documents you can request</h2></div></div>
+    <p style="margin:0 0 18px;color:var(--mut);max-width:44em">Add any of these to your quote request. Availability depends on the part, and the seller confirms what exists before you buy.</p>
+    <ul class="docs">
+      <li><svg><use href="#ic-check"/></svg>FAA Form 8130-3</li>
+      <li><svg><use href="#ic-check"/></svg>Certificate of Conformity</li>
+      <li><svg><use href="#ic-check"/></svg>Maintenance or overhaul records</li>
+      <li><svg><use href="#ic-check"/></svg>Serial number and traceability</li>
+      <li><svg><use href="#ic-check"/></svg>Condition documentation</li>
+    </ul>
+  </div></section>
+  <section class="sec"><div class="wrap">
+    <div class="sh"><div><span class="eyebrow">More</span><h2>Other parts</h2></div><a class="more" href="#inventory">View all inventory</a></div>
+    <div class="grid" id="related"></div>
+  </div></section>
+</div>
+
+<!-- QUOTE -->
+<div class="view" id="v-quote" data-view="quote">
+  <div class="page-h"><div class="wrap"><span class="eyebrow">Request a quote</span><h1>Tell us what you need</h1><p>Pick a part, add your details and any documents you need. We reply with availability, price and shipping.</p></div></div>
+  <div class="wrap"><div class="lay">
+    <div class="col">
+      <div class="formbox">
+        <form id="qform" novalidate>
+          <div class="fgrid">
+            <div class="f full"><label for="q-part">Part</label><select id="q-part"></select></div>
+            <div class="f"><label for="q-name">Your name</label><input id="q-name" type="text" autocomplete="name"></div>
+            <div class="f"><label for="q-co">Company</label><input id="q-co" type="text" autocomplete="organization"></div>
+            <div class="f"><label for="q-email">Email</label><input id="q-email" type="email" autocomplete="email"></div>
+            <div class="f"><label for="q-qty">Quantity</label><input id="q-qty" type="number" min="1" value="1"></div>
+            <div class="f full"><span class="lbl">Documentation needed</span>
+              <div class="checks">
+                <label><input type="checkbox" name="doc" value="FAA Form 8130-3">FAA Form 8130-3</label>
+                <label><input type="checkbox" name="doc" value="Certificate of Conformity">Certificate of Conformity</label>
+                <label><input type="checkbox" name="doc" value="Maintenance or overhaul records">Maintenance or overhaul records</label>
+                <label><input type="checkbox" name="doc" value="Serial number and traceability">Serial number and traceability</label>
+              </div>
+            </div>
+            <div class="f full"><label for="q-msg">Questions or notes</label><textarea id="q-msg" rows="4"></textarea></div>
+          </div>
+          <div class="err" id="q-err" role="alert"></div>
+          <button class="btn" type="submit">Submit quote request</button>
+        </form>
+        <div class="result" id="q-res" hidden>
+          <h3 style="font-size:32px">Your request is ready</h3>
+          <p style="color:var(--mut);margin:8px 0 0"><strong>It has not been sent yet.</strong> This site has no mail service connected. Copy the text below and email it to <span class="ph">[BUSINESS EMAIL]</span>, or message it on WhatsApp.</p>
+          <pre id="q-pre"></pre>
+          <div class="btns"><button class="btn" type="button" id="q-copy">Copy request</button><button class="btn line" type="button" id="q-edit">Edit request</button></div>
+        </div>
+      </div>
+    </div>
+    <aside>
+      <div class="sidebox"><h3>What happens next</h3><ul><li>We check availability and condition.</li><li>You get a quotation with price and shipping.</li><li>You confirm and we arrange payment and dispatch.</li></ul></div>
+      <div class="sidebox"><h3>Prefer to talk?</h3><p>Phone: <span class="ph">[BUSINESS PHONE]</span></p><p>WhatsApp: <span class="ph">[WHATSAPP NUMBER]</span></p></div>
+    </aside>
+  </div></div>
+</div>
+
+<!-- ABOUT -->
+<div class="view" id="v-about" data-view="about">
+  <div class="page-h"><div class="wrap"><span class="eyebrow">About us</span><h1>Aviation parts, listed clearly</h1><p>Avionics Supply Co. supplies aircraft avionics, instruments and aviation components to pilots, aircraft owners, maintenance facilities and aviation businesses.</p></div></div>
+  <section class="sec"><div class="wrap">
+    <div class="two">
+      <div class="panel rv"><h3>Company background</h3><p><span class="ph">[COMPANY BACKGROUND: when the business started, what it specialises in and who it serves.]</span></p></div>
+      <div class="panel rv" style="--d:.08s"><h3>Business approach</h3><p>Every listing shows the manufacturer, part number, condition and price so you can compare before you ask. Documentation is listed per part, and we say plainly when something is not available.</p></div>
+      <div class="panel rv" style="--d:.16s"><h3>Supplier information</h3><p>Location: USA. Accreditations and quality credentials: <span class="ph">[FAA / ASA ACCREDITATION OR OTHER CREDENTIALS, only if held]</span></p></div>
+      <div class="panel rv" style="--d:.24s"><h3>What we supply</h3><p>Avionics and flight displays, plus instruments and other aviation components. <span class="ph">[CONFIRM: only avionics, or all aircraft parts?]</span></p></div>
+    </div>
+    <div class="btns" style="margin-top:34px"><a class="btn" href="#inventory">Browse Inventory</a><a class="btn line" href="#quote">Request a Quote</a></div>
+  </div></section>
+</div>
+
+<!-- SHIPPING -->
+<div class="view" id="v-shipping" data-view="shipping">
+  <div class="page-h"><div class="wrap"><span class="eyebrow">Shipping &amp; returns</span><h1>Delivery, payment and returns</h1><p>Clear terms before you buy. The details below are placeholders until the owner confirms them.</p></div></div>
+  <section class="sec"><div class="wrap">
+    <div class="two">
+      <div class="panel rv"><h3>Shipping destinations</h3><p><span class="ph">[COUNTRIES YOU SHIP TO, and whether you ship internationally]</span></p></div>
+      <div class="panel rv" style="--d:.08s"><h3>Delivery terms</h3><p><span class="ph">[CARRIERS, DELIVERY TIMES, PACKAGING AND INSURANCE]</span></p></div>
+      <div class="panel rv" style="--d:.16s"><h3>Payment</h3><p>Pricing is confirmed in your quotation. <span class="ph">[ACCEPTED PAYMENT METHODS]</span> Online checkout may be added later.</p></div>
+      <div class="panel rv" style="--d:.24s"><h3>Returns and warranty</h3><p><span class="ph">[RETURN POLICY AND ANY WARRANTY, in writing]</span></p></div>
+    </div>
+    <div style="margin-top:56px">
+      <div class="sh"><div><span class="eyebrow">Questions</span><h2>Common questions</h2></div></div>
+      <details><summary>How do I buy a part?</summary><p>Send a quote request for the part you want. We reply with availability, price, shipping and payment details. You confirm before anything is dispatched.</p></details>
+      <details><summary>Can I get documentation?</summary><p>Yes, ask for it in your request. What exists depends on the part. We confirm which documents are available before you commit.</p></details>
+      <details><summary>Are listed prices final?</summary><p>Listed prices are asking prices. Your quotation confirms the price and shipping for your order.</p></details>
+      <details><summary>What if a part I need is not listed?</summary><p>Send a quote request and choose "Not listed". Include the part number and quantity, and we will tell you if we can source it.</p></details>
+    </div>
+  </div></section>
+</div>
+
+<!-- CONTACT -->
+<div class="view" id="v-contact" data-view="contact">
+  <div class="page-h"><div class="wrap"><span class="eyebrow">Contact</span><h1>Talk to Avionics Supply Co.</h1><p>Ask about a part, check availability or request documentation.</p></div></div>
+  <div class="wrap"><div class="lay">
+    <div class="col">
+      <div class="formbox">
+        <form id="cform" novalidate>
+          <div class="fgrid">
+            <div class="f"><label for="c-name">Your name</label><input id="c-name" type="text" autocomplete="name"></div>
+            <div class="f"><label for="c-email">Email</label><input id="c-email" type="email" autocomplete="email"></div>
+            <div class="f full"><label for="c-msg">Message</label><textarea id="c-msg" rows="6"></textarea></div>
+          </div>
+          <div class="err" id="c-err" role="alert"></div>
+          <button class="btn" type="submit">Prepare message</button>
+        </form>
+        <div class="result" id="c-res" hidden>
+          <h3 style="font-size:32px">Your message is ready</h3>
+          <p style="color:var(--mut);margin:8px 0 0"><strong>It has not been sent yet.</strong> This site has no mail service connected. Copy the text below and email it to <span class="ph">[BUSINESS EMAIL]</span>.</p>
+          <pre id="c-pre"></pre>
+          <div class="btns"><button class="btn" type="button" id="c-copy">Copy message</button><button class="btn line" type="button" id="c-edit">Edit message</button></div>
+        </div>
+      </div>
+    </div>
+    <aside>
+      <div class="sidebox"><h3>Details</h3>
+        <p><small class="mono">EMAIL</small><br><span class="ph">[BUSINESS EMAIL]</span></p>
+        <p><small class="mono">TELEPHONE</small><br><span class="ph">[BUSINESS PHONE]</span></p>
+        <p><small class="mono">WHATSAPP</small><br><span class="ph">[WHATSAPP NUMBER]</span></p>
+        <p><small class="mono">LOCATION</small><br>USA · <span class="ph">[BUSINESS ADDRESS, if shown publicly]</span></p>
+        <p><small class="mono">HOURS</small><br><span class="ph">[BUSINESS HOURS]</span></p>
+        <p><small class="mono">FACEBOOK</small><br><span class="ph">[FACEBOOK PAGE LINK]</span></p>
+      </div>
+    </aside>
+  </div></div>
+</div>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="col" style="max-width:320px"><b>Avionics Supply Co.</b><span>Aircraft parts and avionics supplier, USA.</span></div>
+    <div class="col"><b>Site</b><a href="#inventory">Inventory</a><a href="#quote">Request a Quote</a><a href="#about">About</a><a href="#shipping">Shipping &amp; Returns</a><a href="#contact">Contact</a></div>
+    <div class="col"><b>Contact</b><span class="ph" style="color:var(--ink);background:#223C5E;color:#DCE6F3">[BUSINESS EMAIL]</span><span class="ph" style="background:#223C5E;color:#DCE6F3">[BUSINESS PHONE]</span></div>
+  </div>
+  <div class="legal"><div class="wrap">© 2026 Avionics Supply Co. Illustrations are placeholders for product photography.</div></div>
+</footer>
+
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s)};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var PN='[PART NUMBER]';
+  var P=[
+    {id:'g500-gdu620',name:'Garmin G500 GDU 620',make:'Garmin',pn:'011-01264-50',model:'GDU 620',cond:'Serviceable',cat:'Avionics / Flight Display',price:2340,sample:false,order:8,art:'display'},
+    {id:'gns430w',name:'Garmin GNS 430W',make:'Garmin',pn:PN,model:'GNS 430W',cond:'Overhauled',cat:'GPS / Nav / Com',price:null,sample:true,order:7,art:'radio'},
+    {id:'gtx345',name:'Garmin GTX 345',make:'Garmin',pn:PN,model:'GTX 345',cond:'New',cat:'Transponders',price:null,sample:true,order:6,art:'radio'},
+    {id:'efd1000',name:'Aspen EFD1000 Pilot',make:'Aspen Avionics',pn:PN,model:'EFD1000 Pilot',cond:'Serviceable',cat:'Avionics / Flight Display',price:null,sample:true,order:5,art:'display'},
+    {id:'kx155',name:'Bendix/King KX 155',make:'Bendix/King',pn:PN,model:'KX 155',cond:'Used',cat:'GPS / Nav / Com',price:null,sample:true,order:4,art:'radio'},
+    {id:'gma345',name:'Garmin GMA 345',make:'Garmin',pn:PN,model:'GMA 345',cond:'Serviceable',cat:'Audio Panels',price:null,sample:true,order:3,art:'radio'},
+    {id:'kap140',name:'Bendix/King KAP 140',make:'Bendix/King',pn:PN,model:'KAP 140',cond:'Overhauled',cat:'Autopilot',price:null,sample:true,order:2,art:'radio'},
+    {id:'md302',name:'Mid-Continent MD302',make:'Mid-Continent',pn:PN,model:'MD302',cond:'New',cat:'Instruments',price:null,sample:true,order:1,art:'dial'}
+  ];
+  var byId={}; P.forEach(function(p){byId[p.id]=p});
+  function uniq(k){var o={};P.forEach(function(p){o[p[k]]=1});return Object.keys(o).sort()}
+  function money(p){return p.price==null?'Request a quote':'$'+p.price.toLocaleString('en-US')}
+  function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9]/g,'')}
+
+  function card(p,i){
+    return '<a class="card rv" href="#part-'+p.id+'" style="--d:'+((i%4)*.06)+'s"><div class="art"><svg class="ico" aria-hidden="true"><use href="#ic-'+p.art+'"/></svg><span class="tag'+(p.sample?'':' live')+'">'+(p.sample?'Sample':'Listed')+'</span></div>'+
+      '<div class="cb"><span class="mk">'+p.make+'</span><h3>'+p.name+'</h3><span class="pn">P/N '+p.pn+'</span>'+
+      '<div class="row2"><span class="chip">'+p.cond+'</span><span class="pr">'+money(p)+'</span></div><span class="go">View details →</span></div></a>';
+  }
+  function fill(id,list){ $(id).innerHTML=list.map(card).join(''); }
+
+  /* reveal */
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.remove('pre'); io.unobserve(e.target);}})},{threshold:.08});
+  function reveal(scope){ $$('.rv',scope).forEach(function(el){ if(!reduce&&el.getBoundingClientRect().top>innerHeight*.95){el.classList.add('pre'); io.observe(el);} }); }
+
+  /* home */
+  var newest=P.slice().sort(function(a,b){return b.order-a.order});
+  fill('#featured',[byId['g500-gdu620'],byId['efd1000'],byId['gtx345']]);
+  fill('#recent',newest.slice(0,4));
+  var cnt={}; P.forEach(function(p){cnt[p.make]=(cnt[p.make]||0)+1});
+  $('#makers').innerHTML=uniq('make').map(function(m){return '<button type="button" class="mkr" data-make="'+m+'"><b>'+m+'</b><span>'+cnt[m]+' listing'+(cnt[m]>1?'s':'')+'</span></button>'}).join('');
+
+  /* inventory state */
+  var S={q:'',make:'All',cond:'All',cat:'All',price:'any',sort:'new'};
+  function opts(sel,all,arr){ $(sel).innerHTML='<option value="All">'+all+'</option>'+arr.map(function(v){return '<option>'+v+'</option>'}).join(''); }
+  opts('#i-make','All manufacturers',uniq('make')); opts('#i-cond','All conditions',uniq('cond')); opts('#i-cat','All categories',uniq('cat'));
+  function syncInv(){ $('#i-q').value=S.q; $('#i-make').value=S.make; $('#i-cond').value=S.cond; $('#i-cat').value=S.cat; $('#i-price').value=S.price; $('#i-sort').value=S.sort; }
+  function priceOk(p){ if(S.price==='any') return true; if(S.price==='req') return p.price==null; if(p.price==null) return false; return S.price==='u2500'?p.price<2500:p.price>=2500; }
+  function filtered(){
+    var q=S.q.trim().toLowerCase(), nq=norm(q);
+    var r=P.filter(function(p){
+      var hay=(p.name+' '+p.make+' '+p.pn+' '+p.model+' '+p.cat).toLowerCase();
+      var ok=!q||hay.indexOf(q)>-1||(nq&&norm(hay).indexOf(nq)>-1);
+      return ok&&(S.make==='All'||p.make===S.make)&&(S.cond==='All'||p.cond===S.cond)&&(S.cat==='All'||p.cat===S.cat)&&priceOk(p);
+    });
+    r.sort(function(a,b){
+      if(S.sort==='pa'||S.sort==='pd'){ var av=a.price==null?Infinity:a.price, bv=b.price==null?Infinity:b.price; if(av===bv) return b.order-a.order; return S.sort==='pa'?av-bv:(bv===Infinity?-1:av===Infinity?1:bv-av); }
+      if(S.sort==='name') return a.name.localeCompare(b.name);
+      return b.order-a.order;
+    });
+    return r;
+  }
+  function renderInv(){
+    var r=filtered();
+    $('#count').textContent='Showing '+r.length+' of '+P.length+' parts';
+    if(!r.length){ $('#results').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>No parts match</h3><p style="margin:0;color:var(--mut)">Clear the filters, or ask us to source it.</p><a class="btn" href="#quote">Request a Quote</a></div>'; return; }
+    fill('#results',r); reveal($('#results'));
+  }
+  [['#i-q','q','input'],['#i-make','make','change'],['#i-cond','cond','change'],['#i-cat','cat','change'],['#i-price','price','change'],['#i-sort','sort','change']].forEach(function(a){
+    $(a[0]).addEventListener(a[2],function(){S[a[1]]=this.value; renderInv();});
+  });
+  $('#reset').addEventListener('click',function(){S={q:'',make:'All',cond:'All',cat:'All',price:'any',sort:'new'}; syncInv(); renderInv();});
+  $('#hform').addEventListener('submit',function(e){e.preventDefault(); S.q=$('#h-q').value; location.hash='inventory';});
+  $('#makers').addEventListener('click',function(e){var b=e.target.closest('.mkr'); if(!b) return; S={q:'',make:b.getAttribute('data-make'),cond:'All',cat:'All',price:'any',sort:'new'}; location.hash='inventory';});
+
+  /* part detail */
+  var quotePart='';
+  function renderPart(id){
+    var p=byId[id]; if(!p){ location.hash='inventory'; return; }
+    $('#pd-crumb').textContent=p.name;
+    $('#pd-art').innerHTML='<svg class="ico" aria-hidden="true"><use href="#ic-'+p.art+'"/></svg><span class="tag'+(p.sample?'':' live')+'">'+(p.sample?'Sample listing':'Listed')+'</span>';
+    var note=p.sample?'Sample listing for layout only. Replace with real stock.':'Illustrative product listing based on the supplied Facebook post, not a verified live inventory listing. Product photo to come.';
+    $('#pd-info').innerHTML='<span class="mk">'+p.make+'</span><h1>'+p.name+'</h1><div><span class="chip">'+p.cond+'</span></div><div class="pd-price">'+money(p)+'</div>'+
+      '<dl class="dl"><dt>Manufacturer</dt><dd>'+p.make+'</dd><dt>Part number</dt><dd class="mono">'+p.pn+'</dd><dt>Model</dt><dd>'+p.model+'</dd><dt>Condition</dt><dd>'+p.cond+'</dd><dt>Category</dt><dd>'+p.cat+'</dd><dt>Availability</dt><dd>Confirm with seller</dd><dt>Documentation</dt><dd>Confirm with seller</dd></dl>'+
+      '<div class="note" style="margin:6px 0 0">'+note+'</div>'+
+      '<div class="btns"><button class="btn" type="button" id="pd-q" data-part="'+p.id+'">Request Product Information</button><a class="btn line" href="#inventory">Back to inventory</a></div>'+
+      '<p style="margin:0;color:var(--mut);font-size:15px">Ask about availability, documentation and shipping.</p>';
+    $('#pd-q').addEventListener('click',function(){quotePart=this.getAttribute('data-part'); location.hash='quote';});
+    var rel=newest.filter(function(x){return x.id!==id}).slice(0,4); fill('#related',rel);
+    document.title=p.name+' | Avionics Supply Co.';
+  }
+
+  /* quote and contact forms */
+  $('#q-part').innerHTML='<option value="">Not listed or general enquiry</option>'+P.map(function(p){return '<option value="'+p.id+'">'+p.name+(p.pn!==PN?' ('+p.pn+')':'')+'</option>'}).join('');
+  function copyText(btn,text){
+    function done(){var o=btn.textContent; btn.textContent='Copied'; setTimeout(function(){btn.textContent=o},1600);}
+    function fb(){var pre=btn.closest('.result').querySelector('pre'); var rg=document.createRange(); rg.selectNodeContents(pre); var s=getSelection(); s.removeAllRanges(); s.addRange(rg); var o=btn.textContent; btn.textContent='Selected, press copy'; setTimeout(function(){btn.textContent=o},2200);}
+    try{navigator.clipboard.writeText(text).then(done,fb);}catch(e){fb();}
+  }
+  var okMail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  $('#qform').addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=$('#q-name').value.trim(), email=$('#q-email').value.trim(), qty=parseInt($('#q-qty').value,10), err=$('#q-err');
+    if(!name){err.textContent='Enter your name.'; $('#q-name').focus(); return;}
+    if(!okMail.test(email)){err.textContent='Enter a valid email address.'; $('#q-email').focus(); return;}
+    if(!(qty>=1)){err.textContent='Quantity must be 1 or more.'; $('#q-qty').focus(); return;}
+    err.textContent='';
+    var p=byId[$('#q-part').value], docs=$$('input[name=doc]:checked').map(function(c){return c.value});
+    var t='Quote request, Avionics Supply Co.\n\nPart: '+(p?p.name+(p.pn!==PN?' (P/N '+p.pn+')':''):'Not listed / general enquiry')+'\nQuantity: '+qty+'\nName: '+name+'\nCompany: '+($('#q-co').value.trim()||'-')+'\nEmail: '+email+'\nDocumentation needed: '+(docs.length?docs.join(', '):'None specified')+'\n\nNotes: '+($('#q-msg').value.trim()||'-');
+    $('#q-pre').textContent=t; $('#qform').hidden=true; $('#q-res').hidden=false; $('#q-res').scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'});
+  });
+  $('#q-copy').addEventListener('click',function(){copyText(this,$('#q-pre').textContent)});
+  $('#q-edit').addEventListener('click',function(){$('#q-res').hidden=true; $('#qform').hidden=false;});
+  $('#cform').addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=$('#c-name').value.trim(), email=$('#c-email').value.trim(), msg=$('#c-msg').value.trim(), err=$('#c-err');
+    if(!name){err.textContent='Enter your name.'; $('#c-name').focus(); return;}
+    if(!okMail.test(email)){err.textContent='Enter a valid email address.'; $('#c-email').focus(); return;}
+    if(!msg){err.textContent='Write a message.'; $('#c-msg').focus(); return;}
+    err.textContent='';
+    $('#c-pre').textContent='Message to Avionics Supply Co.\n\nName: '+name+'\nEmail: '+email+'\n\n'+msg;
+    $('#cform').hidden=true; $('#c-res').hidden=false;
+  });
+  $('#c-copy').addEventListener('click',function(){copyText(this,$('#c-pre').textContent)});
+  $('#c-edit').addEventListener('click',function(){$('#c-res').hidden=true; $('#cform').hidden=false;});
+
+  /* router */
+  var views=['home','inventory','quote','about','shipping','contact'];
+  var titles={home:'Avionics Supply Co.',inventory:'Parts Inventory | Avionics Supply Co.',quote:'Request a Quote | Avionics Supply Co.',about:'About | Avionics Supply Co.',shipping:'Shipping & Returns | Avionics Supply Co.',contact:'Contact | Avionics Supply Co.'};
+  function show(name,navKey){
+    $$('.view').forEach(function(v){v.classList.toggle('on',v.getAttribute('data-view')===name)});
+    $$('.nav a').forEach(function(a){ if(a.getAttribute('data-r')===navKey) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+    scrollTo(0,0);
+    reveal($('.view.on'));
+  }
+  function route(){
+    var h=(location.hash||'#home').slice(1);
+    if(h.indexOf('part-')===0){ renderPart(h.slice(5)); if(byId[h.slice(5)]) show('part','inventory'); return; }
+    if(views.indexOf(h)<0) h='home';
+    if(h==='inventory'){ syncInv(); renderInv(); }
+    if(h==='quote'){ $('#q-part').value=quotePart; quotePart=''; }
+    document.title=titles[h];
+    show(h,h);
+  }
+  addEventListener('hashchange',route);
+  route();
+})();
+</script>
+</body>
+</html>
